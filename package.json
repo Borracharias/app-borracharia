@@ -6,12 +6,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "codegen:local": "swagger-typescript-api generate -p http://localhost:3003/api-json -o ./src/lib -n api-client.ts --extract-enums"
   },
   "dependencies": {
+    "@chakra-ui/next-js": "^2.4.2",
+    "@chakra-ui/react": "^2.10.9",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.90.20",
+    "@types/js-cookie": "^3.0.6",
+    "axios": "^1.13.3",
+    "framer-motion": "^11.18.2",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^0.563.0",
     "next": "16.1.4",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.1",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -21,6 +36,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
+    "swagger-typescript-api": "^13.2.16",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
