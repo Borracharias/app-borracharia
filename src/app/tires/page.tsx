@@ -43,7 +43,7 @@ export default function TiresPage() {
         })}
       >
         <DataField
-          label="tipo"
+          label="Tipo"
           type="select"
           register={register("type")}
           error={errors.type}
@@ -56,14 +56,14 @@ export default function TiresPage() {
         </DataField>
 
         <DataField
-          label="modelo"
+          label="Modelo"
           register={register("model")}
           placeholder="Ex: Pirelli Scorpion"
           error={errors.model}
         />
 
         <DataField
-          label="aro"
+          label="Aro"
           type="select"
           placeholder="Selecione o aro"
           register={register("rim")}
@@ -77,7 +77,7 @@ export default function TiresPage() {
         </DataField>
 
         <DataField
-          label="numeração"
+          label="Numeração"
           type="select"
           placeholder={
             !selectedRim ? "Selecione o aro primeiro" : "Selecione a numeração"
@@ -94,21 +94,21 @@ export default function TiresPage() {
         </DataField>
 
         <DataField
-          label="quantidade"
+          label="Quantidade"
           type="number"
           register={register("quantity")}
           error={errors.quantity}
         />
 
         <DataField
-          label="custo"
+          label="Custo"
           type="number"
           inputProps={{ step: "0.01" }}
           register={register("price")}
           error={errors.price}
         />
 
-        <DataButton isLoading={isCreating}>confirmar</DataButton>
+        <DataButton isLoading={isCreating}>CONFIRMAR</DataButton>
       </DataForm>
     </Container>
   );

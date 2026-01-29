@@ -42,7 +42,7 @@ export default function StockPage() {
       data={sortedPneus || []}
       isLoading={isLoading}
       emptyMessage="Nenhum pneu encontrado no estoque."
-      showTableHeader={false}
+      showTableHeader={true}
       filterComponent={
         <Text fontSize="lg" fontWeight="bold">
           PNEUS

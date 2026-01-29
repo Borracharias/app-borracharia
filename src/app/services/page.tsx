@@ -27,21 +27,21 @@ export default function ServicesPage() {
 
       <DataForm onSubmit={handleSubmit((data) => createServico(data))}>
         <DataField
-          label="nome"
+          label="Nome"
           register={register("name")}
           placeholder="Ex: Alinhamento"
           error={errors.name}
         />
 
         <DataField
-          label="descrição(opcional)"
+          label="Descrição (Opcional)"
           type="textarea"
           register={register("description")}
           placeholder="Detalhes do serviço"
           error={errors.description}
         />
 
-        <DataButton isLoading={isCreating}>confirmar</DataButton>
+        <DataButton isLoading={isCreating}>CONFIRMAR</DataButton>
       </DataForm>
     </Container>
   );

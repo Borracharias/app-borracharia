@@ -52,7 +52,7 @@ export default function PageFinanceDay() {
         isLoading={isLoading}
         emptyMessage="Nenhum pedido encontrado para hoje."
         onRowClick={handleRowClick}
-        showTableHeader={false}
+        showTableHeader={true}
         headerRight={
           <Text
             bg="linear-gradient(180deg, #FFFFFF 0%, #E6E8EB 45%, #BFC3C9 100%)"

@@ -207,7 +207,7 @@ export function HomeActions({
               </Button>
             </VStack>
 
-            <Button
+            {/* <Button
               variant="metal-red"
               onClick={handleLogout}
               rightIcon={<LogOut size={16} />}
@@ -217,7 +217,7 @@ export function HomeActions({
               w="full"
             >
               SAIR
-            </Button>
+            </Button> */}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

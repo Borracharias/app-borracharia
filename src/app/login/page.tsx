@@ -39,10 +39,12 @@ export default function LoginPage() {
       display="flex"
       alignItems="center"
       justifyContent="center"
+      bg="white"
     >
       <Box
         w="full"
         p={8}
+        bg="linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"
         borderWidth={1}
         borderRadius="2xl"
         borderColor="white"
@@ -87,9 +89,10 @@ export default function LoginPage() {
 
           <Button
             type="submit"
+            color="black"
             width="full"
             isLoading={isLoginLoading}
-            variant="outline"
+            variant="metal-white"
           >
             Entrar
           </Button>

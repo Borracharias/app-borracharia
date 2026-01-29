@@ -14,7 +14,7 @@ import { useExpenses } from "../hooks/useExpenses";
 export default function AddExpensePage() {
   const router = useRouter();
   const { createExpense, isCreating } = useExpenses();
-  
+
   const {
     register,
     handleSubmit,
@@ -37,7 +37,7 @@ export default function AddExpensePage() {
 
       <DataForm onSubmit={handleSubmit(onSubmit)}>
         <DataField
-          label="tipo"
+          label="Tipo"
           type="select"
           placeholder="Selecione o tipo"
           register={register("type")}
@@ -51,14 +51,14 @@ export default function AddExpensePage() {
         </DataField>
 
         <DataField
-          label="descrição"
+          label="Descrição"
           register={register("description")}
           placeholder="Ex: Conta de luz"
           error={errors.description}
         />
 
         <DataField
-          label="valor"
+          label="Valor"
           type="number"
           inputProps={{ step: "0.01" }}
           register={register("amount")}
@@ -66,7 +66,7 @@ export default function AddExpensePage() {
           placeholder="0.00"
         />
 
-        <DataButton isLoading={isCreating}>confirmar</DataButton>
+        <DataButton isLoading={isCreating}>CONFIRMAR</DataButton>
       </DataForm>
     </Container>
   );
