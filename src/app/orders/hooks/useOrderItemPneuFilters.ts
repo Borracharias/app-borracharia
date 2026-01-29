@@ -19,6 +19,10 @@ export function useOrderItemTiresFilters({
     control,
     name: `itens.${index}.garantia.hasWarranty`,
   });
+  const tipoPneuFilter = useWatch({
+    control,
+    name: `itens.${index}.tipoPneuFilter`,
+  });
   const aroFilter = useWatch({ control, name: `itens.${index}.aroFilter` });
   const numeracaoFilter = useWatch({
     control,
@@ -27,9 +31,12 @@ export function useOrderItemTiresFilters({
 
   useEffect(() => {
     if (tipo === "PNEU") {
-      if (aroFilter && numeracaoFilter && pneus) {
+      if (aroFilter && numeracaoFilter && tipoPneuFilter && pneus) {
         const pneu = pneus.find(
-          (p) => p.rim === Number(aroFilter) && p.size === numeracaoFilter,
+          (p) =>
+            p.rim === Number(aroFilter) &&
+            p.size === numeracaoFilter &&
+            p.type === tipoPneuFilter
         );
 
         if (pneu) {
@@ -41,14 +48,19 @@ export function useOrderItemTiresFilters({
         setValue(`itens.${index}.itemId`, "");
       }
     }
-  }, [tipo, aroFilter, numeracaoFilter, pneus, setValue, index]);
+  }, [tipo, aroFilter, numeracaoFilter, tipoPneuFilter, pneus, setValue, index]);
 
   const availableRims = useMemo(
     () =>
-      Array.from(new Set(pneus?.map((p) => p.rim).filter(Boolean))).sort(
-        (a, b) => (a || 0) - (b || 0),
-      ),
-    [pneus],
+      Array.from(
+        new Set(
+          pneus
+            ?.filter((p) => !tipoPneuFilter || p.type === tipoPneuFilter)
+            .map((p) => p.rim)
+            .filter(Boolean)
+        )
+      ).sort((a, b) => (a || 0) - (b || 0)),
+    [pneus, tipoPneuFilter]
   );
 
   const availableSizes = useMemo(
@@ -56,17 +68,22 @@ export function useOrderItemTiresFilters({
       Array.from(
         new Set(
           pneus
-            ?.filter((p) => p.rim === Number(aroFilter))
+            ?.filter(
+              (p) =>
+                p.rim === Number(aroFilter) &&
+                (!tipoPneuFilter || p.type === tipoPneuFilter)
+            )
             .map((p) => p.size)
-            .filter(Boolean),
-        ),
+            .filter(Boolean)
+        )
       ).sort(),
-    [pneus, aroFilter],
+    [pneus, aroFilter, tipoPneuFilter]
   );
 
   return {
     tipo,
     hasWarranty,
+    tipoPneuFilter,
     aroFilter,
     availableRims,
     availableSizes,

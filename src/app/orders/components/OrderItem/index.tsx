@@ -3,6 +3,7 @@ import { Box, Flex, Text, IconButton, VStack } from "@chakra-ui/react";
 import { Trash } from "lucide-react";
 
 import type { Pneu, Servico } from "@/lib/api-client";
+import { CreatePneuDtoTypeEnum } from "@/lib/api-client";
 import { DataField } from "@/components/DataField";
 import { OrderForm } from "../../schema";
 import { useOrderItemTiresFilters } from "../../hooks/useOrderItemPneuFilters";
@@ -22,8 +23,14 @@ export function OrderItem({ index, remove, pneus, servicos }: Props) {
     formState: { errors },
   } = useFormContext<OrderForm>();
 
-  const { tipo, hasWarranty, aroFilter, availableRims, availableSizes } =
-    useOrderItemTiresFilters({ index, pneus, control, setValue });
+  const {
+    tipo,
+    hasWarranty,
+    tipoPneuFilter,
+    aroFilter,
+    availableRims,
+    availableSizes,
+  } = useOrderItemTiresFilters({ index, pneus, control, setValue });
 
   return (
     <Box p={4} borderWidth={1} borderRadius="xl">
@@ -42,7 +49,7 @@ export function OrderItem({ index, remove, pneus, servicos }: Props) {
 
       <VStack spacing={4} mt={4}>
         <DataField
-          label="Tipo"
+          label="Categoria"
           type="select"
           register={register(`itens.${index}.tipo`)}
         >
@@ -52,6 +59,19 @@ export function OrderItem({ index, remove, pneus, servicos }: Props) {
 
         {tipo === "PNEU" ? (
           <VStack w="full" align="start">
+            <DataField
+              label="Tipo do Pneu"
+              type="select"
+              placeholder="Selecione o tipo..."
+              register={register(`itens.${index}.tipoPneuFilter`)}
+            >
+              {Object.values(CreatePneuDtoTypeEnum).map((t) => (
+                <option key={t} value={t}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </option>
+              ))}
+            </DataField>
+
             <Flex gap={4} w="full">
               <DataField
                 label="Aro"
@@ -70,12 +90,12 @@ export function OrderItem({ index, remove, pneus, servicos }: Props) {
                 label="Numeração"
                 type="select"
                 placeholder="Selecione..."
+                isDisabled={!aroFilter}
                 register={register(`itens.${index}.numeracaoFilter`)}
-                selectProps={{ isDisabled: !aroFilter }}
               >
-                {availableSizes.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
+                {availableSizes.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
                   </option>
                 ))}
               </DataField>
