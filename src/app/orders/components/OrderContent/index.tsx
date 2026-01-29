@@ -33,12 +33,12 @@ export function OrderContent() {
       <FormProvider {...methods}>
         <DataForm onSubmit={handleSubmit}>
           <DataField
-            label="cliente"
+            label="Cliente"
             register={register("nomeCliente")}
             error={errors.nomeCliente}
           />
           <DataField
-            label="telefone"
+            label="Telefone"
             register={register("telefoneCliente")}
             error={errors.telefoneCliente}
           />
@@ -57,7 +57,7 @@ export function OrderContent() {
             <Plus />
           </Button>
 
-          <DataButton isLoading={isCreating}>confirmar</DataButton>
+          <DataButton isLoading={isCreating}>CONFIRMAR</DataButton>
         </DataForm>
       </FormProvider>
     </Container>

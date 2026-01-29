@@ -8,7 +8,7 @@ import { formatCurrency, formatDate } from "@/utils/utils";
 import type { Pedido } from "@/lib/api-client";
 import { Filter } from "../Filter";
 import { OrdersModal } from "@/components/OrdersModal";
-import { DataTable } from "../../../../components/DataTable/inde";
+import { DataTable } from "../../../../components/DataTable/index";
 
 interface DadosDia {
   dia: string;
@@ -110,18 +110,17 @@ export default function PageFinanceMounth() {
         }
         headerRight={
           <Box
-            bg="green.900"
+            bg="linear-gradient(180deg, #FFFFFF 0%, #E6E8EB 45%, #BFC3C9 100%)"
             px={3}
             py={2}
-            borderRadius="md"
-            border="1px solid"
-            borderColor="green.700"
+            borderRadius="14px"
+            boxShadow="inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 6px 16px rgba(0, 0, 0, 0.25)"
             textAlign="right"
           >
-            <Text fontSize="xs" color="green.200" mb={0}>
+            <Text fontSize="xs" color="black" mb={0} fontWeight="bold">
               VALOR TOTAL MÊS
             </Text>
-            <Text fontSize="md" fontWeight="bold" color="white">
+            <Text fontSize="md" fontWeight="bold" color="black">
               {formatCurrency(valorTotalMes)}
             </Text>
           </Box>

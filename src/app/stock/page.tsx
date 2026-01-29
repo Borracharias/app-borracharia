@@ -3,7 +3,7 @@
 import { useToast, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { DataTable } from "../../components/DataTable/inde";
+import { DataTable } from "../../components/DataTable/index";
 
 export default function StockPage() {
   const toast = useToast();

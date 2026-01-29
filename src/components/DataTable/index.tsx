@@ -1,19 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Flex,
-  Text,
-  Table,
-  Tbody,
-  Thead,
-  Tr,
-  Th,
-  Td,
-  Center,
-  Spinner,
-} from "@chakra-ui/react";
+import { Box, Container, Flex, Text, Center, Spinner } from "@chakra-ui/react";
 import { PageHeader } from "@/components/Header";
 import { ReactNode } from "react";
 
@@ -51,7 +38,6 @@ export function DataTable<T extends { id?: string | number }>({
     <Container
       maxW="md"
       h="100vh"
-      bg="black"
       color="white"
       p={4}
       display="flex"
@@ -70,13 +56,15 @@ export function DataTable<T extends { id?: string | number }>({
 
       {/* Tabela */}
       <Box
-        border="1px solid"
-        borderColor="whiteAlpha.300"
+        // border="1px solid"
+        // borderColor="whiteAlpha.700"
         borderRadius="xl"
         flex={1}
+        bg="linear-gradient(180deg, #FFFFFF 0%, #E6E8EB 45%, #BFC3C9 100%)"
         overflow="hidden"
         display="flex"
         flexDirection="column"
+        boxShadow="0 8px 32px rgba(0, 0, 0, 0.4)"
       >
         {/* Cabeçalho da Tabela */}
         {showTableHeader && (
@@ -84,16 +72,16 @@ export function DataTable<T extends { id?: string | number }>({
             px={6}
             py={3}
             borderBottom="1px solid"
-            borderColor="whiteAlpha.300"
+            borderColor="black"
             justify="space-between"
-            bg="whiteAlpha.50"
+            // bg="black"
           >
             {columns.map((column, index) => (
               <Text
                 key={index}
                 fontWeight="bold"
                 fontSize="sm"
-                color="gray.300"
+                color="black"
                 textAlign={column.isNumeric ? "right" : "left"}
                 flex={column.width || "1"}
               >
@@ -110,55 +98,43 @@ export function DataTable<T extends { id?: string | number }>({
           </Center>
         ) : data.length === 0 ? (
           <Center flex={1}>
-            <Text color="gray.500">{emptyMessage}</Text>
+            <Text color="black">{emptyMessage}</Text>
           </Center>
         ) : (
           <Box overflowY="auto" flex={1}>
-            <Table variant="unstyled" size="sm">
-              {!showTableHeader && (
-                <Thead>
-                  <Tr>
-                    {columns.map((column, index) => (
-                      <Th
-                        key={index}
-                        color="white"
-                        isNumeric={column.isNumeric}
-                      >
-                        {column.header}
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-              )}
-              <Tbody>
-                {data.map((item, rowIndex) => (
-                  <Tr
-                    key={item.id || rowIndex}
-                    _hover={{
-                      bg: "whiteAlpha.50",
-                      cursor: onRowClick ? "pointer" : "default",
-                    }}
-                    borderBottom="1px solid"
-                    borderColor="whiteAlpha.100"
-                    onClick={() => onRowClick?.(item)}
-                  >
-                    {columns.map((column, colIndex) => (
-                      <Td
-                        key={colIndex}
-                        pl={colIndex === 0 ? 6 : undefined}
-                        py={3}
-                        fontSize="md"
-                        isNumeric={column.isNumeric}
-                        color={column.isNumeric ? "green.300" : undefined}
-                        fontWeight={column.isNumeric ? "bold" : undefined}
-                      >
-                        {column.accessor(item)}
-                      </Td>
-                    ))}
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
+            <Flex direction="column">
+              {data.map((item, rowIndex) => (
+                <Flex
+                  key={item.id || rowIndex}
+                  px={6}
+                  py={3}
+                  borderBottom="1px solid"
+                  borderColor="gray.200"
+                  justify="space-between"
+                  align="center"
+                  color="black"
+                  fontWeight="bold"
+                  _hover={{
+                    bg: "whiteAlpha.50",
+                    cursor: onRowClick ? "pointer" : "default",
+                  }}
+                  onClick={() => onRowClick?.(item)}
+                >
+                  {columns.map((column, colIndex) => (
+                    <Box
+                      key={colIndex}
+                      flex={column.width || "1"}
+                      textAlign={column.isNumeric ? "right" : "left"}
+                      fontSize="md"
+                      color={column.isNumeric ? "green.500" : undefined}
+                      fontWeight={column.isNumeric ? "bold" : undefined}
+                    >
+                      {column.accessor(item)}
+                    </Box>
+                  ))}
+                </Flex>
+              ))}
+            </Flex>
           </Box>
         )}
       </Box>

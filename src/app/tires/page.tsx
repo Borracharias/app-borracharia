@@ -43,6 +43,19 @@ export default function TiresPage() {
         })}
       >
         <DataField
+          label="tipo"
+          type="select"
+          register={register("type")}
+          error={errors.type}
+        >
+          {Object.values(CreatePneuDtoTypeEnum).map((type) => (
+            <option key={type} value={type}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </option>
+          ))}
+        </DataField>
+
+        <DataField
           label="modelo"
           register={register("model")}
           placeholder="Ex: Pirelli Scorpion"

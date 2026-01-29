@@ -70,7 +70,12 @@ export function OrdersModal({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="xl" isCentered>
       <ModalOverlay backdropFilter="blur(5px)" />
-      <ModalContent bg="gray.900" borderColor="whiteAlpha.300" borderWidth={1}>
+      <ModalContent
+        bg= "linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"
+        borderColor="whiteAlpha.300"
+        borderWidth={1}
+        maxW={{ base: "90%", md: "xl" }}
+      >
         <ModalHeader>
           <HStack spacing={2}>
             {showDetails && date && (

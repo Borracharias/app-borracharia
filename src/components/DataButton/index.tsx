@@ -12,11 +12,7 @@ export function DataButton({ children, ...props }: DataButtonProps) {
       size="lg"
       w="full"
       mt={4}
-      bg="green.500"
-      border="1px solid"
-      borderColor="green.500"
-      color="white"
-      _hover={{ bg: "green.600", borderColor: "green.600" }}
+      variant="metal-blue-dark"
       {...props}
     >
       {children}

@@ -122,7 +122,7 @@ export interface Servico {
   updatedAt: string;
 }
 
-export interface OrderItem {
+export interface PedidoItem {
   /**
    * ID do item do pedido
    * @example "uuid-v4"
@@ -196,7 +196,7 @@ export interface Pedido {
   /** Cliente que fez o pedido */
   cliente: Cliente;
   /** Itens do pedido */
-  itens: OrderItem[];
+  itens: PedidoItem[];
   /**
    * Indica se o pedido possui garantia
    * @example true
@@ -248,6 +248,55 @@ export interface Cliente {
   updatedAt: string;
 }
 
+export interface Despesa {
+  /**
+   * ID da despesa
+   * @example "uuid-v4"
+   */
+  id: string;
+  /**
+   * Tipo da despesa
+   * @example "contas"
+   */
+  type: DespesaTypeEnum;
+  /**
+   * Descrição da despesa
+   * @example "Conta de Luz"
+   */
+  description?: string;
+  /**
+   * Valor total da despesa
+   * @example 150
+   */
+  amount: number;
+  /**
+   * Tipo do pneu (apenas se despesa for pneus)
+   * @example "novo"
+   */
+  pneuType?: DespesaPneuTypeEnum;
+  /**
+   * Aro do pneu (apenas se despesa for pneus)
+   * @example 16
+   */
+  pneuRim?: number;
+  /**
+   * Tamanho do pneu (apenas se despesa for pneus)
+   * @example "205/55"
+   */
+  pneuSize?: string;
+  /**
+   * Preço unitário do pneu (apenas se despesa for pneus)
+   * @example 450
+   */
+  pneuPrice?: number;
+  borracharia: Borracharia;
+  borrachariaId: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
 export interface Borracharia {
   /**
    * ID da borracharia
@@ -269,6 +318,7 @@ export interface Borracharia {
   servicos: Servico[];
   clientes: Cliente[];
   pedidos: Pedido[];
+  despesas: Despesa[];
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -372,7 +422,7 @@ export interface UpdateServicoDto {
   description?: string;
 }
 
-export interface CreateOrderItemDto {
+export interface CreatePedidoItemDto {
   /**
    * @format uuid
    * @example "uuid-pneu"
@@ -418,7 +468,7 @@ export interface CreatePedidoDto {
    * @example "cliente@email.com"
    */
   clientEmail?: string;
-  items: CreateOrderItemDto[];
+  items: CreatePedidoItemDto[];
   /** @example true */
   hasWarranty?: boolean;
   garantia?: CreateGarantiaPedidoDto;
@@ -479,11 +529,76 @@ export interface LoginDto {
   password: string;
 }
 
+export interface CreateDespesaDto {
+  /** @example "pneus" */
+  type: CreateDespesaDtoTypeEnum;
+  /**
+   * Descrição opcional
+   * @example "Compra de pneus novos"
+   */
+  description?: string;
+  /**
+   * Valor total da despesa
+   * @example 1000
+   */
+  amount: number;
+  pneuType?: CreateDespesaDtoPneuTypeEnum;
+  /** @example 16 */
+  pneuRim?: number;
+  /** @example "205/55" */
+  pneuSize?: string;
+  /** @example 450 */
+  pneuPrice?: number;
+}
+
+export interface UpdateDespesaDto {
+  /** @example "pneus" */
+  type?: UpdateDespesaDtoTypeEnum;
+  /**
+   * Descrição opcional
+   * @example "Compra de pneus novos"
+   */
+  description?: string;
+  /**
+   * Valor total da despesa
+   * @example 1000
+   */
+  amount?: number;
+  pneuType?: UpdateDespesaDtoPneuTypeEnum;
+  /** @example 16 */
+  pneuRim?: number;
+  /** @example "205/55" */
+  pneuSize?: string;
+  /** @example 450 */
+  pneuPrice?: number;
+}
+
 /**
  * Tipo do pneu
  * @example "novo"
  */
 export enum PneuTypeEnum {
+  Novo = "novo",
+  Usado = "usado",
+  Remold = "remold",
+}
+
+/**
+ * Tipo da despesa
+ * @example "contas"
+ */
+export enum DespesaTypeEnum {
+  Pneus = "pneus",
+  Ferramentas = "ferramentas",
+  Contas = "contas",
+  Servicos = "servicos",
+}
+
+/**
+ * Tipo do pneu (apenas se despesa for pneus)
+ * @example "novo"
+ */
+export enum DespesaPneuTypeEnum {
   Novo = "novo",
   Usado = "usado",
   Remold = "remold",
@@ -623,6 +738,34 @@ export enum UpdatePneuDtoTypeEnum {
   Remold = "remold",
 }
 
+/** @example "pneus" */
+export enum CreateDespesaDtoTypeEnum {
+  Pneus = "pneus",
+  Ferramentas = "ferramentas",
+  Contas = "contas",
+  Servicos = "servicos",
+}
+
+export enum CreateDespesaDtoPneuTypeEnum {
+  Novo = "novo",
+  Usado = "usado",
+  Remold = "remold",
+}
+
+/** @example "pneus" */
+export enum UpdateDespesaDtoTypeEnum {
+  Pneus = "pneus",
+  Ferramentas = "ferramentas",
+  Contas = "contas",
+  Servicos = "servicos",
+}
+
+export enum UpdateDespesaDtoPneuTypeEnum {
+  Novo = "novo",
+  Usado = "usado",
+  Remold = "remold",
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -659,10 +802,8 @@ export interface ApiConfig<SecurityDataType = unknown> {
   customFetch?: typeof fetch;
 }
 
-export interface HttpResponse<
-  D extends unknown,
-  E extends unknown = unknown,
-> extends Response {
+export interface HttpResponse<D extends unknown, E extends unknown = unknown>
+  extends Response {
   data: D;
   error: E;
 }
@@ -1520,6 +1661,108 @@ export class Api<
       this.request<void, any>({
         path: `/auth/logout`,
         method: "POST",
+        ...params,
+      }),
+  };
+  despesas = {
+    /**
+     * No description
+     *
+     * @tags Despesas
+     * @name DespesasControllerCreate
+     * @summary Criar nova despesa
+     * @request POST:/despesas
+     * @secure
+     */
+    despesasControllerCreate: (
+      data: CreateDespesaDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<Despesa, any>({
+        path: `/despesas`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Despesas
+     * @name DespesasControllerFindAll
+     * @summary Listar todas as despesas da borracharia
+     * @request GET:/despesas
+     * @secure
+     */
+    despesasControllerFindAll: (params: RequestParams = {}) =>
+      this.request<Despesa[], any>({
+        path: `/despesas`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Despesas
+     * @name DespesasControllerFindOne
+     * @summary Buscar despesa por ID
+     * @request GET:/despesas/{id}
+     * @secure
+     */
+    despesasControllerFindOne: (id: string, params: RequestParams = {}) =>
+      this.request<Despesa, any>({
+        path: `/despesas/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Despesas
+     * @name DespesasControllerUpdate
+     * @summary Atualizar despesa
+     * @request PATCH:/despesas/{id}
+     * @secure
+     */
+    despesasControllerUpdate: (
+      id: string,
+      data: UpdateDespesaDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<Despesa, any>({
+        path: `/despesas/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Despesas
+     * @name DespesasControllerRemove
+     * @summary Remover despesa
+     * @request DELETE:/despesas/{id}
+     * @secure
+     */
+    despesasControllerRemove: (id: string, params: RequestParams = {}) =>
+      this.request<Despesa, any>({
+        path: `/despesas/${id}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
         ...params,
       }),
   };

@@ -12,23 +12,24 @@ export function PageHeader({ title }: PageHeaderProps) {
   return (
     <Box mb={6}>
       <Flex justify="space-between" align="center" mb={4}>
-        <Image src="/logo.png" alt="Logo" h="40px" objectFit="contain" />
-        <Heading size="md" color="green.400">
+        <Heading size="lg" color="whiteAlpha.900">
           {title.toUpperCase()}
         </Heading>
+        <Image src="/logo.png" alt="Logo" h="90px" objectFit="contain" />
+        
       </Flex>
 
       <Button
-        variant="ghost"
-        color="white"
-        leftIcon={<ChevronLeft />}
+        variant="metal-white"
+        color="black"
+        leftIcon={<ChevronLeft className="w-4 h-4" />}
         justifyContent="flex-start"
-        px={0}
-        w="fit-content"
+        px={3}
+        py={13}
+        size="xs"
         onClick={() => router.back()}
-        _hover={{ bg: "transparent", color: "gray.300" }}
       >
-        voltar
+        VOLTAR
       </Button>
     </Box>
   );

@@ -1,7 +1,24 @@
 "use client";
 
-import { Box, Button, Flex, Heading, Text, Grid } from "@chakra-ui/react";
-import { Plus } from "lucide-react";
+import {
+  Button,
+  Flex,
+  Heading,
+  Text,
+  useDisclosure,
+  Drawer,
+  DrawerBody,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  VStack,
+  Box,
+} from "@chakra-ui/react";
+import { Menu, LogOut } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/auth-store";
+import { api } from "@/lib/api";
 
 interface HomeActionsProps {
   faturamento: string;
@@ -12,6 +29,8 @@ interface HomeActionsProps {
   onTires: () => void;
   onServices: () => void;
   onOrders: () => void;
+  onExpenses: () => void;
+  onAddExpense: () => void;
 }
 
 export function HomeActions({
@@ -23,154 +42,185 @@ export function HomeActions({
   onTires,
   onServices,
   onOrders,
+  onExpenses,
+  onAddExpense,
 }: HomeActionsProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    try {
+      await api.auth.authControllerLogout();
+    } catch (error) {
+      console.error("Erro ao realizar logout no servidor:", error);
+    } finally {
+      logout();
+      router.push("/login");
+    }
+  };
+
   return (
-    <Flex flex={1} direction="column">
-      <Heading size="sm" mb={3} fontWeight="bold" color="white">
-        ATENDIMENTO
-      </Heading>
-      <Box
-        border="1px solid"
-        borderColor="gray.900"
-        boxShadow="0px 4px 10px rgba(0, 0, 0, 0.1)"
-        borderRadius="2xl"
-        p={4}
-        mb={8}
-      >
-        <Grid templateColumns="1fr 1fr" gap={4} alignItems="center">
-          <Button
-            h="160px"
-            bg="green.500"
-            border="1px solid"
-            borderColor="green.500"
-            color="white"
-            _hover={{ bg: "green.600", borderColor: "green.600" }}
-            fontSize="xl"
-            fontWeight="bold"
-            onClick={onOrders}
-            borderRadius="xl"
-          >
-            NOVO PEDIDO
-          </Button>
-          <Box
-            h="80px"
-            p={4}
-            border="1px solid"
-            borderColor="white"
-            borderRadius="xl"
-            bg="white"
-            color="black"
-            fontWeight="bold"
-            cursor="pointer"
-            onClick={onFinanceDay}
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-          >
-            <Text fontSize="xs" mb={2} fontWeight="bold" color="black">
-              FINANCEIRO (DIA)
-            </Text>
-            <Heading size="sm">{isLoading ? "R$ --" : faturamento}</Heading>
-          </Box>
-        </Grid>
-      </Box>
+    <Flex flex={1} direction="column" position="relative">
+      {/* Topo: Atendimento e Financeiro */}
+      <Flex justify="space-between" align="flex-end" mb={6}>
+        <Heading size="sm" fontWeight="bold" color="white" mb={2}></Heading>
 
-      <Heading size="sm" mb={3} fontWeight="bold" color="white">
-        ADICIONAR ITENS
-      </Heading>
-      <Box
-        border="2px solid"
-        borderColor="gray.900"
-        boxShadow="0px 4px 10px rgba(0, 0, 0, 0.1)"
-        borderRadius="2xl"
-        p={4}
-        mb={8}
-      >
-        <Flex gap={4} justify="space-between">
-          <Button
-            w="150px"
-            h="120px"
-            variant="outline"
-            flexDirection="column"
-            gap={2}
-            onClick={onTires}
-            bg="green.500"
-            border="1px solid"
-            borderColor="green.500"
-            color="white"
-            _hover={{ bg: "green.600", borderColor: "green.600" }}
-            borderRadius="xl"
-          >
-            <Plus size={25} strokeWidth={5} />
-            <Text fontSize="sm" fontWeight="bold">
-              PNEUS
-            </Text>
-          </Button>
-          <Button
-            w="150px"
-            h="120px"
-            variant="outline"
-            flexDirection="column"
-            bg="green.500"
-            border="1px solid"
-            borderColor="green.500"
-            color="white"
-            _hover={{ bg: "green.600", borderColor: "green.600" }}
-            gap={2}
-            onClick={onServices}
-            borderRadius="xl"
-          >
-            <Plus size={25} strokeWidth={5} />
-            <Text fontSize="sm" fontWeight="bold">
-              SERVIÇOS
-            </Text>
-          </Button>
-        </Flex>
-      </Box>
-
-      <Box mt="auto">
-        <Heading size="sm" mb={3} fontWeight="bold" color="white">
-          GESTÃO
-        </Heading>
-        <Box
-          border="2px solid"
-          borderColor="gray.900"
-          boxShadow="0px 4px 10px rgba(0, 0, 0, 0.1)"
-          borderRadius="2xl"
-          p={4}
+        <Button
+          variant="metal-white"
+          minW="140px"
+          h="auto"
+          onClick={onFinanceDay}
+          flexDirection="column"
+          alignItems="flex-start"
+          justifyContent="center"
+          py={4}
         >
-          <Flex gap={4}>
+          <Text fontSize="xs" fontWeight="bold" mb={1}>
+            FINANCEIRO (DIA)
+          </Text>
+          <Heading size="md">
+            {isLoading ? "R$ --" : `R$ ${faturamento}`}
+          </Heading>
+        </Button>
+      </Flex>
+
+      {/* Botão Novo Pedido */}
+      <Button
+        w="100%"
+        h="220px"
+        variant="metal-blue-dark"
+        fontSize="2xl"
+        fontWeight="bold"
+        onClick={onOrders}
+        mb={8}
+      >
+        NOVO PEDIDO
+      </Button>
+
+      {/* Botão Menu Rodapé */}
+      <Flex mt="auto" justify="center" pb={6}>
+        <Button
+          w="90px"
+          h="90px"
+          borderRadius="full"
+          variant="metal-blue-dark"
+          onClick={onOpen}
+          flexDirection="column"
+          p={0}
+        >
+          <Menu size={40} />
+        </Button>
+      </Flex>
+
+      {/* Drawer do Menu */}
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="xs">
+        <DrawerOverlay backdropFilter="blur(2px)" bg="blackAlpha.600" />
+        <DrawerContent
+          bg="linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"
+          color="white"
+          borderColor="#0B3C6D"
+        >
+          <DrawerCloseButton />
+          <DrawerBody pt={6} px={6} display="flex" flexDirection="column">
+            <Flex justify="center" mb={8} mt={8}>
+              {/* <Box position="relative" w="120px" h="120px">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Borracharia"
+                  fill
+                  sizes="120px"
+                  style={{
+                    objectFit: "contain",
+                  }}
+                  priority
+                />
+              </Box> */}
+            </Flex>
+
+            <VStack align="stretch" spacing={6} flex={1}>
+              <Button
+                variant="unstyled"
+                display="flex"
+                justifyContent="flex-start"
+                fontSize="xl"
+                fontWeight="normal"
+                _hover={{ color: "whiteAlpha.800" }}
+                onClick={onTires}
+              >
+                ADICIONAR PNEU
+              </Button>
+              <Button
+                variant="unstyled"
+                display="flex"
+                justifyContent="flex-start"
+                fontSize="xl"
+                fontWeight="normal"
+                _hover={{ color: "whiteAlpha.800" }}
+                onClick={onServices}
+              >
+                ADICIONAR SERVIÇO
+              </Button>
+              <Button
+                variant="unstyled"
+                display="flex"
+                justifyContent="flex-start"
+                fontSize="xl"
+                fontWeight="normal"
+                _hover={{ color: "whiteAlpha.800" }}
+                onClick={onFinanceMounth}
+              >
+                FINANCEIRO (MÊS)
+              </Button>
+              <Button
+                variant="unstyled"
+                display="flex"
+                justifyContent="flex-start"
+                fontSize="xl"
+                fontWeight="normal"
+                _hover={{ color: "whiteAlpha.800" }}
+                onClick={onStock}
+              >
+                ESTOQUE
+              </Button>
+              <Button
+                variant="unstyled"
+                display="flex"
+                justifyContent="flex-start"
+                fontSize="xl"
+                fontWeight="normal"
+                _hover={{ color: "whiteAlpha.800" }}
+                onClick={onAddExpense}
+              >
+                ADICIONAR DESPESAS
+              </Button>
+              <Button
+                variant="unstyled"
+                display="flex"
+                justifyContent="flex-start"
+                fontSize="xl"
+                fontWeight="normal"
+                _hover={{ color: "whiteAlpha.800" }}
+                onClick={onExpenses}
+              >
+                DESPESAS
+              </Button>
+            </VStack>
+
             <Button
-              flex={1}
-              h="60px"
-              variant="outline"
-              borderColor="white"
-              borderRadius="xl"
-              bg="white"
-              color="black"
-              _hover={{ bg: "white", borderColor: "white" }}
-              fontWeight="bold"
-              onClick={onStock}
+              variant="metal-red"
+              onClick={handleLogout}
+              rightIcon={<LogOut size={16} />}
+              size="sm"
+              mt={6}
+              mb={4}
+              w="full"
             >
-              ESTOQUE
+              SAIR
             </Button>
-            <Button
-              flex={1}
-              h="60px"
-              variant="outline"
-              borderColor="white"
-              borderRadius="xl"
-              bg="white"
-              color="black"
-              _hover={{ bg: "white", borderColor: "white" }}
-              fontWeight="bold"
-              onClick={onFinanceMounth}
-            >
-              FINANCEIRO
-            </Button>
-          </Flex>
-        </Box>
-      </Box>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Flex>
   );
 }
