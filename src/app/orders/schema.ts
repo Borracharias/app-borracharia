@@ -9,7 +9,10 @@ export const orderSchema = z.object({
       itemId: z.string().min(1, "Selecione um item válido"),
       quantidade: z.coerce.number().min(1),
       precoUnitario: z.coerce.number().min(0),
-      tipoPneuFilter: z.enum(["novo", "usado", "remold"]).optional(),
+      tipoPneuFilter: z
+        .enum(["novo", "usado", "remold"])
+        .or(z.literal(""))
+        .optional(),
       aroFilter: z.coerce.number().optional(),
       numeracaoFilter: z.string().optional(),
       garantia: z
