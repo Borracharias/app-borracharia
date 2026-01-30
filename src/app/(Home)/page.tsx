@@ -13,7 +13,7 @@ export default function PageHome() {
   const router = useRouter();
 
   const { data: pedidos, isLoading } = useQuery({
-    queryKey: ["pedidos", "home-faturamento"],
+    queryKey: ["pedidos"],
     queryFn: () =>
       api.pedidos
         .pedidosControllerFindAll()

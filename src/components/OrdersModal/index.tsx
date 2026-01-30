@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Box,
   Button,
@@ -26,7 +28,9 @@ import {
 import type { Pedido } from "@/lib/api-client";
 import { formatCurrency, formatDateFull } from "@/utils/utils";
 import { useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Download, MessageCircle } from "lucide-react";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import OrderPdf from "../OrderPdf";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -55,6 +59,23 @@ export function OrdersModal({
     onClose();
   };
 
+  const handleWhatsApp = () => {
+    if (!currentPedido || !currentPedido.cliente?.phone) return;
+
+    // Remove caracteres não numéricos
+    const phoneRaw = currentPedido.cliente.phone.replace(/\D/g, "");
+    // Adiciona 55 se parecer um número brasileiro sem DDI
+    const phone =
+      phoneRaw.length >= 10 && phoneRaw.length <= 11
+        ? `55${phoneRaw}`
+        : phoneRaw;
+
+    const message = `Olá ${currentPedido.cliente.name}, segue os detalhes do seu pedido #${currentPedido.id.slice(0, 8).toUpperCase()} no valor de ${formatCurrency(currentPedido.total || 0)}.`;
+
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
+
   const handleRowClick = (pedido: Pedido) => {
     setLocalSelectedPedido(pedido);
   };
@@ -71,7 +92,7 @@ export function OrdersModal({
     <Modal isOpen={isOpen} onClose={handleClose} size="xl" isCentered>
       <ModalOverlay backdropFilter="blur(5px)" />
       <ModalContent
-        bg= "linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"
+        bg="linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"
         borderColor="whiteAlpha.300"
         borderWidth={1}
         maxW={{ base: "90%", md: "xl" }}
@@ -224,6 +245,35 @@ export function OrdersModal({
         </ModalBody>
 
         <ModalFooter>
+          {showDetails && currentPedido && (
+            <HStack spacing={4} mr="auto">
+              <Button
+                leftIcon={<MessageCircle size={18} />}
+                colorScheme="whatsapp"
+                onClick={handleWhatsApp}
+                isDisabled={!currentPedido.cliente?.phone}
+                size="sm"
+              >
+                WhatsApp
+              </Button>
+              <PDFDownloadLink
+                document={<OrderPdf pedido={currentPedido} />}
+                fileName={`pedido-${currentPedido.cliente?.name?.replace(/\s+/g, "_") || "cliente"}-${currentPedido.cliente.phone}.pdf`}
+              >
+                {({ loading }) => (
+                  <Button
+                    leftIcon={<Download size={18} />}
+                    colorScheme="blue"
+                    isLoading={loading}
+                    loadingText="Gerando PDF..."
+                    size="sm"
+                  >
+                    Baixar PDF
+                  </Button>
+                )}
+              </PDFDownloadLink>
+            </HStack>
+          )}
           <Button onClick={handleClose} variant="ghost">
             Fechar
           </Button>

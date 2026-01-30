@@ -12,10 +12,8 @@ import {
   DrawerContent,
   DrawerCloseButton,
   VStack,
-  Box,
 } from "@chakra-ui/react";
-import { Menu, LogOut } from "lucide-react";
-import Image from "next/image";
+import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { api } from "@/lib/api";
@@ -46,19 +44,6 @@ export function HomeActions({
   onAddExpense,
 }: HomeActionsProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const router = useRouter();
-  const logout = useAuthStore((state) => state.logout);
-
-  const handleLogout = async () => {
-    try {
-      await api.auth.authControllerLogout();
-    } catch (error) {
-      console.error("Erro ao realizar logout no servidor:", error);
-    } finally {
-      logout();
-      router.push("/login");
-    }
-  };
 
   return (
     <Flex flex={1} direction="column" position="relative">
@@ -123,22 +108,7 @@ export function HomeActions({
         >
           <DrawerCloseButton />
           <DrawerBody pt={6} px={6} display="flex" flexDirection="column">
-            <Flex justify="center" mb={8} mt={8}>
-              {/* <Box position="relative" w="120px" h="120px">
-                <Image
-                  src="/logo.png"
-                  alt="Logo Borracharia"
-                  fill
-                  sizes="120px"
-                  style={{
-                    objectFit: "contain",
-                  }}
-                  priority
-                />
-              </Box> */}
-            </Flex>
-
-            <VStack align="stretch" spacing={6} flex={1}>
+            <VStack align="stretch" mt={14} spacing={6} flex={1}>
               <Button
                 variant="unstyled"
                 display="flex"
@@ -206,18 +176,6 @@ export function HomeActions({
                 DESPESAS
               </Button>
             </VStack>
-
-            {/* <Button
-              variant="metal-red"
-              onClick={handleLogout}
-              rightIcon={<LogOut size={16} />}
-              size="sm"
-              mt={6}
-              mb={4}
-              w="full"
-            >
-              SAIR
-            </Button> */}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
