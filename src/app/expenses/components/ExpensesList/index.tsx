@@ -4,28 +4,17 @@ import { Box, Text, Flex } from "@chakra-ui/react";
 import { DataTable } from "@/components/DataTable";
 import { useExpenses } from "../../hooks/useExpenses";
 import { formatCurrency } from "@/utils/utils";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Filter } from "../../../finance/components/Filter";
 
 export function ExpensesList() {
   const { expenses, isLoading } = useExpenses();
-  // Inicializa com string vazia para garantir consistência no SSR
-  const [selectedMonth, setSelectedMonth] = useState("");
 
-  // Efeito apenas para definir o valor inicial no cliente
-  useEffect(() => {
-    // Usamos um timeout zero para jogar a atualização para o próximo ciclo de evento
-    // Isso evita o aviso de "setState in effect" síncrono
-    const timer = setTimeout(() => {
-      setSelectedMonth((prev) => {
-        if (prev !== "") return prev;
-        const today = new Date();
-        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-      });
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []); // Dependência vazia: roda apenas uma vez na montagem
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+  });
 
   const filteredExpenses = useMemo(() => {
     if (!expenses || !selectedMonth) return [];
@@ -33,21 +22,21 @@ export function ExpensesList() {
     const [year, month] = selectedMonth.split("-").map(Number);
 
     return expenses
-      .filter((expense) => {
-        const expenseDate = new Date(expense.createdAt);
-        return (
-          expenseDate.getFullYear() === year &&
-          expenseDate.getMonth() + 1 === month
-        );
+      .map((e) => {
+        const d = new Date(e.createdAt);
+        return {
+          ...e,
+          _createdAtDate: d,
+          _createdAtBR: d.toLocaleDateString("pt-BR"),
+        };
       })
-      .sort((a, b) => {
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      });
+      .filter((expense) => {
+        const d = expense._createdAtDate;
+        return d.getFullYear() === year && d.getMonth() + 1 === month;
+      })
+      .sort((a, b) => b._createdAtDate.getTime() - a._createdAtDate.getTime());
   }, [expenses, selectedMonth]);
 
-  // Calcular total do mês
   const monthTotal = useMemo(() => {
     return filteredExpenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
   }, [filteredExpenses]);
@@ -82,15 +71,8 @@ export function ExpensesList() {
         </Flex>
       }
       columns={[
-        {
-          header: "Data",
-          accessor: (item) =>
-            new Date(item.createdAt).toLocaleDateString("pt-BR"),
-        },
-        {
-          header: "Descrição",
-          accessor: (item) => item.description || "-",
-        },
+        { header: "Data", accessor: (item) => item._createdAtBR },
+        { header: "Descrição", accessor: (item) => item.description || "-" },
         {
           header: "Valor",
           accessor: (item) => formatCurrency(item.amount),
