@@ -4,17 +4,21 @@ import { Box, Text, Flex } from "@chakra-ui/react";
 import { DataTable } from "@/components/DataTable";
 import { useExpenses } from "../../hooks/useExpenses";
 import { formatCurrency } from "@/utils/utils";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Filter } from "../../../finance/components/Filter";
 
 export function ExpensesList() {
   const { expenses, isLoading } = useExpenses();
 
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    if (typeof window === "undefined") return "";
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  useEffect(() => {
     const today = new Date();
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-  });
+    // eslint-disable-next-line
+    setSelectedMonth(
+      `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
+    );
+  }, []);
 
   const filteredExpenses = useMemo(() => {
     if (!expenses || !selectedMonth) return [];

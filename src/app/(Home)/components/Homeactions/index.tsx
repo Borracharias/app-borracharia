@@ -14,9 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/auth-store";
-import { api } from "@/lib/api";
+import { useRef } from "react";
 
 interface HomeActionsProps {
   faturamento: string;
@@ -31,23 +29,37 @@ interface HomeActionsProps {
   onAddExpense: () => void;
 }
 
-export function HomeActions({
-  faturamento,
-  isLoading,
-  onStock,
-  onFinanceMounth,
-  onFinanceDay,
-  onTires,
-  onServices,
-  onOrders,
-  onExpenses,
-  onAddExpense,
-}: HomeActionsProps) {
+export function HomeActions(props: HomeActionsProps) {
+  const {
+    faturamento,
+    isLoading,
+    onStock,
+    onFinanceMounth,
+    onFinanceDay,
+    onTires,
+    onServices,
+    onOrders,
+    onExpenses,
+    onAddExpense,
+  } = props;
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+
+  const openDrawer = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    onOpen();
+  };
+
+  // garante que fecha o drawer antes de qualquer ação (ex: router.push)
+  const runAndClose = (fn: () => void) => () => {
+    onClose();
+    // pequena folga pro foco/aria finalizar antes de navegar
+    setTimeout(() => fn(), 0);
+  };
 
   return (
     <Flex flex={1} direction="column" position="relative">
-      {/* Topo: Atendimento e Financeiro */}
       <Flex justify="space-between" align="flex-end" mb={6}>
         <Heading size="sm" fontWeight="bold" color="white" mb={2}></Heading>
 
@@ -70,7 +82,6 @@ export function HomeActions({
         </Button>
       </Flex>
 
-      {/* Botão Novo Pedido */}
       <Button
         w="100%"
         h="220px"
@@ -83,14 +94,14 @@ export function HomeActions({
         NOVO PEDIDO
       </Button>
 
-      {/* Botão Menu Rodapé */}
       <Flex mt="auto" justify="center" pb={6}>
         <Button
+          ref={menuBtnRef}
           w="90px"
           h="90px"
           borderRadius="full"
           variant="metal-blue-dark"
-          onClick={onOpen}
+          onClick={openDrawer}
           flexDirection="column"
           p={0}
         >
@@ -98,13 +109,12 @@ export function HomeActions({
         </Button>
       </Flex>
 
-      {/* Drawer do Menu */}
       <Drawer
         isOpen={isOpen}
         placement="left"
         onClose={onClose}
         size="xs"
-        blockScrollOnMount={false}
+        finalFocusRef={menuBtnRef} // ✅ devolve foco corretamente
       >
         <DrawerOverlay backdropFilter="blur(2px)" bg="blackAlpha.600" />
         <DrawerContent
@@ -120,64 +130,57 @@ export function HomeActions({
                 display="flex"
                 justifyContent="flex-start"
                 fontSize="xl"
-                fontWeight="normal"
-                _hover={{ color: "whiteAlpha.800" }}
-                onClick={onTires}
+                onClick={runAndClose(onTires)}
               >
                 ADICIONAR PNEU
               </Button>
+
               <Button
                 variant="unstyled"
                 display="flex"
                 justifyContent="flex-start"
                 fontSize="xl"
-                fontWeight="normal"
-                _hover={{ color: "whiteAlpha.800" }}
-                onClick={onServices}
+                onClick={runAndClose(onServices)}
               >
                 ADICIONAR SERVIÇO
               </Button>
+
               <Button
                 variant="unstyled"
                 display="flex"
                 justifyContent="flex-start"
                 fontSize="xl"
-                fontWeight="normal"
-                _hover={{ color: "whiteAlpha.800" }}
-                onClick={onFinanceMounth}
+                onClick={runAndClose(onFinanceMounth)}
               >
                 FINANCEIRO (MÊS)
               </Button>
+
               <Button
                 variant="unstyled"
                 display="flex"
                 justifyContent="flex-start"
                 fontSize="xl"
-                fontWeight="normal"
-                _hover={{ color: "whiteAlpha.800" }}
-                onClick={onStock}
+                onClick={runAndClose(onStock)}
               >
                 ESTOQUE
               </Button>
+
               <Button
                 variant="unstyled"
                 display="flex"
                 justifyContent="flex-start"
                 fontSize="xl"
-                fontWeight="normal"
-                _hover={{ color: "whiteAlpha.800" }}
-                onClick={onAddExpense}
+                onClick={runAndClose(onAddExpense)}
               >
                 ADICIONAR DESPESAS
               </Button>
+
               <Button
                 variant="unstyled"
                 display="flex"
                 justifyContent="flex-start"
                 fontSize="xl"
-                fontWeight="normal"
-                _hover={{ color: "whiteAlpha.800" }}
-                onClick={onExpenses}
+                onClick={runAndClose(onExpenses)}
               >
                 DESPESAS
               </Button>

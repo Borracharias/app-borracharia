@@ -1,7 +1,7 @@
 "use client";
 
 import { Text, useDisclosure } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import type { Pedido } from "@/lib/api-client";
@@ -13,6 +13,12 @@ import { DataTable } from "@/components/DataTable/index";
 export default function PageFinanceDay() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
+  const [today, setToday] = useState<Date | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line
+    setToday(new Date());
+  }, []);
 
   const { data: pedidos, isLoading } = useQuery({
     queryKey: ["pedidos", "faturamento"],
@@ -25,19 +31,17 @@ export default function PageFinanceDay() {
   const { faturamentoFormatado } = useFinance(pedidos, "dia");
 
   const pedidosDoDia = useMemo(() => {
-    if (!pedidos) return [];
-
-    const hoje = new Date();
+    if (!pedidos || !today) return [];
 
     return pedidos.filter((pedido) => {
       const dataPedido = new Date(pedido.createdAt);
       return (
-        dataPedido.getFullYear() === hoje.getFullYear() &&
-        dataPedido.getMonth() === hoje.getMonth() &&
-        dataPedido.getDate() === hoje.getDate()
+        dataPedido.getFullYear() === today.getFullYear() &&
+        dataPedido.getMonth() === today.getMonth() &&
+        dataPedido.getDate() === today.getDate()
       );
     });
-  }, [pedidos]);
+  }, [pedidos, today]);
 
   const handleRowClick = (pedido: Pedido) => {
     setSelectedPedido(pedido);

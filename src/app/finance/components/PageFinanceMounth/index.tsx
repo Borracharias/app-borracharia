@@ -3,7 +3,7 @@
 import { Box, Text, useDisclosure } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { formatCurrency, formatDate } from "@/utils/utils";
 import type { Pedido } from "@/lib/api-client";
 import { Filter } from "../Filter";
@@ -16,15 +16,21 @@ interface DadosDia {
 }
 
 export default function PageFinanceMounth() {
-  const today = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(
-    `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
-  );
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    // eslint-disable-next-line
+    setSelectedMonth(
+      `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
+    );
+  }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   const { startDate, endDate } = useMemo(() => {
+    if (!selectedMonth) return { startDate: "", endDate: "" };
     const [year, month] = selectedMonth.split("-").map(Number);
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 0);
@@ -48,6 +54,7 @@ export default function PageFinanceMounth() {
         return [];
       }
     },
+    enabled: !!startDate && !!endDate,
   });
 
   const dadosAgrupados = useMemo(() => {
@@ -87,6 +94,7 @@ export default function PageFinanceMounth() {
   }, [pedidos, selectedDay]);
 
   const formatDiaCompleto = (dia: string) => {
+    if (!selectedMonth) return dia;
     const [year, month] = selectedMonth.split("-").map(Number);
     const date = new Date(year, month - 1, Number(dia));
     return date.toLocaleDateString("pt-BR");
