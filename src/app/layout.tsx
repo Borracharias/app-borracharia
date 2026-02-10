@@ -19,6 +19,11 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Borracharia App",
   },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   formatDetection: {
     telephone: false,
   },
