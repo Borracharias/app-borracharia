@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { CreateDespesaDtoTypeEnum } from "@/lib/api-client";
 
-// Excluir 'Pneus' das opções
 export const EXPENSE_TYPES = Object.values(CreateDespesaDtoTypeEnum).filter(
   (type) => type !== CreateDespesaDtoTypeEnum.Pneus
 );

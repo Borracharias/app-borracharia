@@ -99,7 +99,13 @@ export function HomeActions({
       </Flex>
 
       {/* Drawer do Menu */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="xs">
+      <Drawer
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        size="xs"
+        blockScrollOnMount={false}
+      >
         <DrawerOverlay backdropFilter="blur(2px)" bg="blackAlpha.600" />
         <DrawerContent
           bg="linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"

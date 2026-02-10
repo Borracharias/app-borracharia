@@ -26,7 +26,6 @@ export function OrderItem({ index, remove, pneus, servicos }: Props) {
   const {
     tipo,
     hasWarranty,
-    tipoPneuFilter,
     aroFilter,
     availableRims,
     availableSizes,

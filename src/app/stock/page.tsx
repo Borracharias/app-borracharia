@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useToast, Text, Input } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -11,41 +11,47 @@ export default function StockPage() {
   const toast = useToast();
 
   const {
-    data: pneus,
+    data: pneus = [],
     isLoading,
     error,
   } = useQuery({
     queryKey: ["pneus"],
     queryFn: async () => {
       const response = await api.pneus.pneusControllerFindAll();
-      return response.data;
+      return response.data || [];
     },
+    staleTime: 2 * 60 * 1000, // 2 minutos (estoque muda menos que pedidos)
+    refetchOnWindowFocus: true,
   });
 
   if (error) {
     toast({
-      title: "Erro ao carregar Stock",
+      title: "Erro ao carregar estoque",
       description: "Não foi possível carregar a lista de pneus.",
       status: "error",
+      duration: 5000,
+      isClosable: true,
     });
   }
 
-  // Filtrar e ordenar pneus
-  const filteredPneus = pneus
-    ?.filter((pneu) =>
-      pneu.size.toLowerCase().includes(searchSize.toLowerCase()),
-    )
-    .sort((a, b) => {
-      if (a.rim !== b.rim) {
-        return a.rim - b.rim;
-      }
-      return a.size.localeCompare(b.size);
-    });
+  // Memoizar filtragem e ordenação
+  const filteredPneus = useMemo(() => {
+    return pneus
+      .filter((pneu) =>
+        pneu.size.toLowerCase().includes(searchSize.toLowerCase()),
+      )
+      .sort((a, b) => {
+        if (a.rim !== b.rim) {
+          return a.rim - b.rim;
+        }
+        return a.size.localeCompare(b.size);
+      });
+  }, [pneus, searchSize]);
 
   return (
     <DataTable
       title="ESTOQUE"
-      data={filteredPneus || []}
+      data={filteredPneus}
       isLoading={isLoading}
       emptyMessage="Nenhum pneu encontrado no estoque."
       showTableHeader={true}
