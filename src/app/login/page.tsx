@@ -98,7 +98,7 @@ export default function LoginPage() {
             Entrar
           </Button>
 
-          <InstallAppButton mt={4} />
+          <InstallAppButton />
         </VStack>
       </Box>
     </Container>

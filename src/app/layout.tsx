@@ -13,6 +13,19 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Borracharia App",
   description: "Sistema de gerenciamento de borracharia",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Borracharia App",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport = {
+  themeColor: "#0F2A44",
 };
 
 export default function RootLayout({

@@ -1,0 +1,21 @@
+{
+  "name": "Borracharia App",
+  "short_name": "Borracharia",
+  "description": "Sistema de gerenciamento de borracharia",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F2A44",
+  "theme_color": "#0F2A44",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
