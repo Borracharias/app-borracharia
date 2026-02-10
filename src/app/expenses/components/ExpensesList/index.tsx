@@ -4,18 +4,31 @@ import { Box, Text, Flex } from "@chakra-ui/react";
 import { DataTable } from "@/components/DataTable";
 import { useExpenses } from "../../hooks/useExpenses";
 import { formatCurrency } from "@/utils/utils";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Filter } from "../../../finance/components/Filter";
 
 export function ExpensesList() {
   const { expenses, isLoading } = useExpenses();
-  const today = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(
-    `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
-  );
+  // Inicializa com string vazia para garantir consistência no SSR
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  // Efeito apenas para definir o valor inicial no cliente
+  useEffect(() => {
+    // Usamos um timeout zero para jogar a atualização para o próximo ciclo de evento
+    // Isso evita o aviso de "setState in effect" síncrono
+    const timer = setTimeout(() => {
+      setSelectedMonth((prev) => {
+        if (prev !== "") return prev;
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+      });
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []); // Dependência vazia: roda apenas uma vez na montagem
 
   const filteredExpenses = useMemo(() => {
-    if (!expenses) return [];
+    if (!expenses || !selectedMonth) return [];
 
     const [year, month] = selectedMonth.split("-").map(Number);
 
