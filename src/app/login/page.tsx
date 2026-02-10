@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useAuth } from "@/hooks/useAuth";
 import { loginSchema, type LoginForm } from "./schema";
+import { InstallAppButton } from "@/components/InstallAppButton";
 
 export default function LoginPage() {
   const { login, isLoginLoading } = useAuth();
@@ -96,6 +97,8 @@ export default function LoginPage() {
           >
             Entrar
           </Button>
+
+          <InstallAppButton mt={4} />
         </VStack>
       </Box>
     </Container>
