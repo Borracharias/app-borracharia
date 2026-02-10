@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import Cookies from "js-cookie";
 
 export const api = new Api({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  baseUrl: typeof window === "undefined" ? process.env.NEXT_PUBLIC_API_URL : "/api/proxy",
   securityWorker: () => {
     const token = Cookies.get("access_token");
     if (token) {
