@@ -15,7 +15,7 @@ import {
   VStack,
   Box,
 } from "@chakra-ui/react";
-import { Download, Share, PlusSquare } from "lucide-react";
+import { Download, Share, PlusSquare, MoreVertical } from "lucide-react";
 
 /**
  * Tipagem do evento beforeinstallprompt (não existe no DOM lib por padrão)
@@ -89,27 +89,66 @@ export function InstallAppButton(props: ButtonProps) {
       <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm">
         <ModalOverlay />
         <ModalContent mx={4} my="auto">
-          <ModalHeader>Instalar no iPhone</ModalHeader>
+          <ModalHeader>Instalar Aplicativo</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <VStack spacing={4} align="start">
-              <Text>
-                Para instalar este aplicativo no seu iPhone, siga os passos:
-              </Text>
+              {isIOS ? (
+                <>
+                  <Text>
+                    Para instalar este aplicativo no seu iPhone, siga os passos:
+                  </Text>
 
-              <Box display="flex" alignItems="center" gap={2}>
-                <Text fontWeight="bold">1.</Text>
-                <Text>Toque no botão de compartilhamento</Text>
-                <Share size={20} />
-                <Text>na barra inferior.</Text>
-              </Box>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Text as="span" fontWeight="bold">
+                      1.
+                    </Text>
+                    <Text as="span">Toque no botão de compartilhamento</Text>
+                    <Share size={20} />
+                    <Text as="span">na barra inferior.</Text>
+                  </Box>
 
-              <Box display="flex" alignItems="center" gap={2}>
-                <Text fontWeight="bold">2.</Text>
-                <Text>Role para baixo e toque em</Text>
-                <Text fontWeight="bold">Adicionar à Tela de Início</Text>
-                <PlusSquare size={20} />
-              </Box>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Text as="span" fontWeight="bold">
+                      2.
+                    </Text>
+                    <Text as="span">Role para baixo e toque em</Text>
+                    <Text as="span" fontWeight="bold">
+                      Adicionar à Tela de Início
+                    </Text>
+                    <PlusSquare size={20} />
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Text>
+                    Para instalar este aplicativo no seu dispositivo, siga os
+                    passos:
+                  </Text>
+
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Text as="span" fontWeight="bold">
+                      1.
+                    </Text>
+                    <Text as="span">Toque no menu do navegador</Text>
+                    <MoreVertical size={20} />
+                  </Box>
+
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Text as="span" fontWeight="bold">
+                      2.
+                    </Text>
+                    <Text as="span">Selecione</Text>
+                    <Text as="span" fontWeight="bold">
+                      Instalar aplicativo
+                    </Text>
+                    <Text as="span">ou</Text>
+                    <Text as="span" fontWeight="bold">
+                      Adicionar à tela inicial
+                    </Text>
+                  </Box>
+                </>
+              )}
             </VStack>
           </ModalBody>
         </ModalContent>
