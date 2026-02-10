@@ -1,12 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useToast } from "@chakra-ui/react";
+import Cookies from "js-cookie";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 
 interface LoginCredentials {
   email: string;
   password: string;
+}
+
+interface LoginResponse {
+  access_token: string;
 }
 
 export function useAuth() {
@@ -20,10 +25,22 @@ export function useAuth() {
   } = useAuthStore();
 
   const loginMutation = useMutation({
-    mutationFn: (data: LoginCredentials) =>
-      api.auth.authControllerLogin(data, { format: "json" }),
+    mutationFn: async (data: LoginCredentials) => {
+      const response = await api.auth.authControllerLogin(data, {
+        format: "json",
+      });
+      return response.data as unknown as LoginResponse;
+    },
 
-    onSuccess: () => {
+    onSuccess: (data: LoginResponse) => {
+      if (data && data.access_token) {
+        Cookies.set("access_token", data.access_token, {
+          expires: 7, // 7 dias
+          secure: true,
+          sameSite: "Strict",
+        });
+      }
+
       setAuthenticated(true);
 
       toast({
@@ -51,6 +68,7 @@ export function useAuth() {
     mutationFn: () => api.auth.authControllerLogout(),
 
     onSettled: () => {
+      Cookies.remove("access_token");
       logoutStore();
       router.push("/login");
     },

@@ -1,24 +1,10 @@
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { LogOut } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/auth-store";
-import { api } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Header() {
-  const router = useRouter();
-  const logout = useAuthStore((state) => state.logout);
-
-  const handleLogout = async () => {
-    try {
-      await api.auth.authControllerLogout();
-    } catch (error) {
-      console.error("Erro ao realizar logout no servidor:", error);
-    } finally {
-      logout();
-      router.push("/login");
-    }
-  };
+  const { logout, isLogoutLoading } = useAuth();
 
   return (
     <Flex justify="space-between" align="center" mb={10}>
@@ -39,7 +25,8 @@ export function Header() {
       </Box>
       <Button
         variant="metal-red"
-        onClick={handleLogout}
+        onClick={() => logout()}
+        isLoading={isLogoutLoading}
         rightIcon={<LogOut size={16} />}
         size="sm"
       >

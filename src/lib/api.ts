@@ -1,8 +1,19 @@
 import { Api } from "./api-client";
 import { useAuthStore } from "@/stores/auth-store";
+import Cookies from "js-cookie";
 
 export const api = new Api({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003",
+  baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  securityWorker: () => {
+    const token = Cookies.get("access_token");
+    if (token) {
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+    }
+  },
   customFetch: async (input, init) => {
     try {
       const response = await fetch(input, {
@@ -11,6 +22,7 @@ export const api = new Api({
       });
 
       if (response.status === 401) {
+        Cookies.remove("access_token");
         useAuthStore.getState().logout();
         if (
           typeof window !== "undefined" &&
