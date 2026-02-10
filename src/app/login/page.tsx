@@ -36,11 +36,12 @@ export default function LoginPage() {
   return (
     <Container
       maxW="container.sm"
-      h="100vh"
+      h="100dvh"
       display="flex"
       alignItems="center"
       justifyContent="center"
-      bg="white"
+      bg="linear-gradient(180deg, #0F2A44 0%, #0B3C6D 45%, #061B33 100%)"
+      p={4}
     >
       <Box
         w="full"
