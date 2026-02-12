@@ -519,6 +519,14 @@ export interface CreateBorrachariaDto {
   admin: CreateAdminDto;
 }
 
+export interface UpdateBorrachariaDto {
+  /** @example "Borracharia do Zé" */
+  name?: string;
+  /** @example "Rua das Flores, 123" */
+  address?: string;
+  admin?: UpdateAdminDto;
+}
+
 export interface LoginDto {
   /**
    * @format email
@@ -1417,6 +1425,23 @@ export class Api<
      * No description
      *
      * @tags Pedidos
+     * @name PedidosControllerDownloadPdf
+     * @summary Gerar PDF do pedido
+     * @request GET:/pedidos/{id}/pdf
+     * @secure
+     */
+    pedidosControllerDownloadPdf: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/pedidos/${id}/pdf`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Pedidos
      * @name PedidosControllerCreate
      * @summary Criar novo pedido (Venda)
      * @request POST:/pedidos
@@ -1628,6 +1653,43 @@ export class Api<
         path: `/borracharias/${id}`,
         method: "GET",
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Borracharias (Multi-tenant)
+     * @name BorrachariasControllerUpdate
+     * @summary Atualizar borracharia
+     * @request PATCH:/borracharias/{id}
+     */
+    borrachariasControllerUpdate: (
+      id: string,
+      data: UpdateBorrachariaDto,
+      params: RequestParams = {},
+    ) =>
+      this.request<object, any>({
+        path: `/borracharias/${id}`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Borracharias (Multi-tenant)
+     * @name BorrachariasControllerRemove
+     * @summary Remover borracharia
+     * @request DELETE:/borracharias/{id}
+     */
+    borrachariasControllerRemove: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/borracharias/${id}`,
+        method: "DELETE",
         ...params,
       }),
   };

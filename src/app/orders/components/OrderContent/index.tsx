@@ -1,7 +1,7 @@
 "use client";
 
 import { FormProvider } from "react-hook-form";
-import { Container, Button } from "@chakra-ui/react";
+import { Container, Button, Text } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/Header";
@@ -11,6 +11,7 @@ import { DataButton } from "@/components/DataButton";
 import { useOrderData } from "@/app/orders/hooks/useOrderData";
 import { useOrderForm } from "@/app/orders/hooks/useOrderForm";
 import { OrderItem } from "../OrderItem";
+import { ConfirmOrderModal } from "../ConfirmOrderModal";
 
 export function OrderContent() {
   const { pneus, servicos } = useOrderData();
@@ -24,6 +25,7 @@ export function OrderContent() {
     appendItem,
     removeItem,
     isCreating,
+    modal,
   } = useOrderForm();
 
   return (
@@ -41,6 +43,8 @@ export function OrderContent() {
             label="Telefone"
             register={register("telefoneCliente")}
             error={errors.telefoneCliente}
+            placeholder="xxXXXXXXXXX"
+            inputProps={{ maxLength: 11 }}
           />
 
           {fields.map((field, index) => (
@@ -57,9 +61,30 @@ export function OrderContent() {
             <Plus />
           </Button>
 
+          {errors.itens && (
+            <Text
+              color="red.500"
+              fontSize="sm"
+              textAlign="center"
+              fontWeight="bold"
+            >
+              {errors.itens.message}
+            </Text>
+          )}
+
           <DataButton isLoading={isCreating}>CONFIRMAR</DataButton>
         </DataForm>
       </FormProvider>
+
+      <ConfirmOrderModal
+        isOpen={modal.isOpen}
+        onClose={modal.onClose}
+        onConfirm={modal.confirmAndCreate}
+        data={modal.formData}
+        isLoading={isCreating}
+        pneus={pneus}
+        servicos={servicos}
+      />
     </Container>
   );
 }

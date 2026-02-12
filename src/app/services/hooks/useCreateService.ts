@@ -33,7 +33,7 @@ export function useCreateService() {
   });
 
   return {
-    createServico: mutation.mutate,
+    createService: mutation.mutate,
     isCreating: mutation.isPending,
   };
 }

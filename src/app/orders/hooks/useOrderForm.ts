@@ -4,11 +4,12 @@ import { useForm, useFieldArray, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useToast } from "@chakra-ui/react";
+import { useToast, useDisclosure } from "@chakra-ui/react";
 
 import { api } from "@/lib/api";
 import type { CreatePedidoDto } from "@/lib/api-client";
 import { OrderForm, orderSchema } from "../schema";
+import { useState } from "react";
 
 function defaultItem(): OrderForm["itens"][number] {
   return {
@@ -47,6 +48,8 @@ function toPayload(data: OrderForm): CreatePedidoDto {
 export function useOrderForm() {
   const router = useRouter();
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [formData, setFormData] = useState<OrderForm | null>(null);
 
   const methods = useForm<OrderForm>({
     resolver: zodResolver(orderSchema) as Resolver<OrderForm>,
@@ -61,6 +64,7 @@ export function useOrderForm() {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = methods;
 
@@ -74,6 +78,12 @@ export function useOrderForm() {
       api.pedidos.pedidosControllerCreate(payload),
     onSuccess: () => {
       toast({ title: "Pedido criado com sucesso", status: "success" });
+      reset({
+        nomeCliente: "",
+        telefoneCliente: "",
+        itens: [defaultItem()],
+      });
+      onClose();
       router.push("/");
     },
     onError: (err: Error) => {
@@ -86,8 +96,15 @@ export function useOrderForm() {
   });
 
   const onSubmit = (data: OrderForm) => {
-    const payload = toPayload(data);
-    mutation.mutate(payload);
+    setFormData(data);
+    onOpen();
+  };
+
+  const confirmAndCreate = () => {
+    if (formData) {
+      const payload = toPayload(formData);
+      mutation.mutate(payload);
+    }
   };
 
   return {
@@ -99,5 +116,11 @@ export function useOrderForm() {
     appendItem: () => append(defaultItem()),
     removeItem: remove,
     isCreating: mutation.isPending,
+    modal: {
+      isOpen,
+      onClose,
+      formData,
+      confirmAndCreate,
+    },
   };
 }

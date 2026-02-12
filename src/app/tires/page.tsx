@@ -2,7 +2,7 @@
 
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Container } from "@chakra-ui/react";
+import { Container, useDisclosure, Box, Text } from "@chakra-ui/react";
 import { CreatePneuDtoTypeEnum } from "@/lib/api-client";
 import { PageHeader } from "@/components/Header";
 import { DataForm } from "@/components/DataForm/DataForm";
@@ -11,14 +11,21 @@ import { DataButton } from "@/components/DataButton";
 import { tireSchema, TireForm, VALID_RIMS } from "./schema";
 import { useRimSize } from "./hooks/useRimSize";
 import { useCreateTires } from "./hooks/useCreatePneu";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
+import { useState } from "react";
+import { formatCurrency } from "@/utils/utils";
 
 export default function TiresPage() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [formData, setFormData] = useState<TireForm | null>(null);
+
   const {
     register,
     handleSubmit,
     control,
     setValue,
     clearErrors,
+    reset,
     formState: { errors },
   } = useForm<TireForm>({
     resolver: zodResolver(tireSchema) as Resolver<TireForm>,
@@ -33,15 +40,34 @@ export default function TiresPage() {
 
   const { createPneu, isCreating } = useCreateTires();
 
+  const onSubmit = (data: TireForm) => {
+    setFormData(data);
+    onOpen();
+  };
+
+  const handleConfirm = () => {
+    if (formData) {
+      createPneu(formData, {
+        onSuccess: () => {
+          reset({
+            type: CreatePneuDtoTypeEnum.Novo,
+            model: "",
+            rim: undefined,
+            size: undefined,
+            quantity: 1,
+            price: 0,
+          });
+          onClose();
+        },
+      });
+    }
+  };
+
   return (
     <Container maxW="container.md" py={6}>
       <PageHeader title="ADICIONAR PNEU" />
 
-      <DataForm
-        onSubmit={handleSubmit((data) => {
-          createPneu(data);
-        })}
-      >
+      <DataForm onSubmit={handleSubmit(onSubmit)}>
         <DataField
           label="Tipo"
           type="select"
@@ -101,15 +127,51 @@ export default function TiresPage() {
         />
 
         <DataField
-          label="Custo"
+          label="Preço Unitário"
           type="number"
-          inputProps={{ step: "0.01" }}
           register={register("price")}
           error={errors.price}
+          placeholder="0.00"
         />
 
         <DataButton isLoading={isCreating}>CONFIRMAR</DataButton>
       </DataForm>
+
+      <ConfirmActionModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onConfirm={handleConfirm}
+        title="CONFIRMAR CADASTRO DE PNEU"
+        isLoading={isCreating}
+      >
+        {formData && (
+          <Box>
+            <Text>
+              <strong>Tipo:</strong> {formData.type}
+            </Text>
+            {formData.model && (
+              <Text>
+                <strong>Modelo:</strong> {formData.model}
+              </Text>
+            )}
+            <Text>
+              <strong>Aro:</strong> {formData.rim}
+            </Text>
+            <Text>
+              <strong>Numeração:</strong> {formData.size}
+            </Text>
+            <Text>
+              <strong>Quantidade:</strong> {formData.quantity}
+            </Text>
+            <Text>
+              <strong>Preço Unitário:</strong> {formatCurrency(formData.price)}
+            </Text>
+            <Text fontWeight="bold" mt={2} color="green.300">
+              Total: {formatCurrency(formData.quantity * formData.price)}
+            </Text>
+          </Box>
+        )}
+      </ConfirmActionModal>
     </Container>
   );
 }
